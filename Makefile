@@ -1,8 +1,7 @@
 all: PageRank
 
-PageRank: PageRank.C
-	mpicc -o PageRank PageRank.C
+PageRank: PageRank.c
+	mpicc -o PageRank PageRank.c
 
 clean:
-	rm *.o
 	rm PageRank
