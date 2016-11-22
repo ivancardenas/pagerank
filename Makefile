@@ -1,10 +1,7 @@
 all: PageRank
 
-PageRank: PageRank.o
-	g++ -o PageRank PageRank.o
-
-PageRank.o: PageRank.C
-	g++ -c -Wall --std=c++11 PageRank.C -o PageRank.o
+PageRank: PageRank.C
+	mpicc -o PageRank PageRank.C
 
 clean:
 	rm *.o
