@@ -1,7 +1,7 @@
 all: PageRank
 
-PageRank: PageRank.c
-	mpicc -o PageRank PageRank.c
+PageRank: PageRank.C
+	mpic++ -o PageRank PageRank.C -std=c++0x
 
 clean:
 	rm PageRank
