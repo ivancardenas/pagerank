@@ -3,9 +3,14 @@
 #include <stdio.h>
 #include <random>
 #include <vector>
+#include <math.h>
 #include <mpi.h>
 
 using namespace std;
+
+
+int get_start_column(int, int, int);
+int get_end_column(int, int, int);
 
 int main(int argc, char** argv) {
 	
@@ -41,17 +46,18 @@ int main(int argc, char** argv) {
 	
 	srand(time(NULL));
 
-	// -------- Matrix generation. --------
-	for (int i = 0; i < length; i++) {
+	// -------- Matrix Creation. --------
+	for (int i = get_start_column(length, workers, rank); 
+			i < get_end_column(length, workers, rank); i++) {
       
 		addition = 0;
       
-		for(int j = 0; j < length; j++) {
+		for (int j = 0; j < length; j++) {
          
 			double result = (double) rand() / (RAND_MAX);
          
 			if (i == j) value = 0;
-      else if (result < density)
+			else if (result < density)
 				value = (double) rand() / (RAND_MAX);
 			else value = 0;
 
@@ -76,28 +82,31 @@ int main(int argc, char** argv) {
 		auxiliary[i] = addition;
 	}
 	
-	for (int i = 0; i < length; i++)
+	for (int i = get_start_column(length, workers, rank);
+			i < get_end_column(length, workers, rank); i++)
 		for (int j = 0; j < length; j++)
 			if (matrix[j][i] != 0)
 				matrix[j][i] = matrix[j][i] / auxiliary[i];
 
-	// -------- Print matrix. --------
-	for (int i = 0; i < length; i++) {
+	// -------- Print Matrix. --------
+	// Inverted out (rows are columns).
+	/* for (int i = get_start_column(length, workers, rank);
+			i < get_end_column(length, workers, rank); i++) {
 		for(int j = 0; j < length; j++) 
-			cout << matrix[i][j] << " | ";
+			cout << matrix[j][i] << " | ";
 		cout << endl;
-	}
+	} */
 
-	// -------- Sparse matrix - CSR. --------
-	int position = 0, counter = 0;
+	// -------- Sparse Matrix - CSR. --------
+	/* int position = 0, counter = 0;
 	
-	for(int i = 0; i < length; i++) {
+	for (int i = 0; i < length; i++) {
 			
 			pointerB.push_back(position);
       
-			for(int j = 0; j < length; j++) {
+			for (int j = 0; j < length; j++) {
          
-				if(matrix[i][j] != 0) {
+				if (matrix[i][j] != 0) {
 					
 					counter++;
 					values.push_back(matrix[i][j]);
@@ -107,9 +116,39 @@ int main(int argc, char** argv) {
 			}
 			
 			pointerE.push_back(position);
-	}
+	} */
 
+	// -------- Filling Vector (r) --------
+	/* double probability = (double)( 1.0 / (double) length);
 	
+	for (int i = 0; i < length; i++) {
+		r.push_back(probability);
+		times.push_back(0.0);
+	} */
+	
+	// -------- Matrix x Vector (r) --------
+	/* for (int i = 0; i < length; i++)
+		for (int j = pointerB[i]; j < pointerE[i]; j++)
+			times[i] += (values[j] * r[columns[j]]); */
+
 
 	MPI_Finalize();
+}
+
+int get_start_column(int length, int workers, int rank) {
+	
+	double start_column = round((double) length
+			 / (double) workers) * rank;
+	
+	return start_column;
+}
+
+int get_end_column(int length, int workers, int rank) {
+
+	double end_column = round((double) length 
+			/ (double) workers) * (rank + 1);
+
+	if (rank == (workers - 1)) return length;
+
+	return end_column;
 }

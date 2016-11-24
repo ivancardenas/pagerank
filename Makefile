@@ -1,7 +1,11 @@
-all: PageRank
+all: PageRankSV PageRankPV
 
-PageRank: PageRank.C
-	mpic++ -o PageRank PageRank.C -std=c++0x
+PageRankSV: PageRankSV.C
+	mpic++ -o PageRankSV PageRankSV.C -std=c++0x
+
+PageRankPV: PageRankPV.C
+	mpic++ -o PageRankPV PageRankPV.C -std=c++0x
 
 clean:
-	rm PageRank
+	rm PageRankSV
+	rm PageRankPV
