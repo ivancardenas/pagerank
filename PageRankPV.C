@@ -1,3 +1,5 @@
+// Page rank - paralell version.
+
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
